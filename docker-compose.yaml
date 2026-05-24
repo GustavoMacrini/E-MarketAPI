@@ -11,22 +11,6 @@ services:
             - private-network
             - public-network
 
-
-    emarket-client:
-        build: 
-            context: ./E-Market-Client
-            dockerfile: Dockerfile
-        volumes:
-            - ./E-Market-Client:/app 
-        ports:
-            - "55786:55786"
-        environment:
-            - NODE_ENV=development
-        networks:
-            - public-network
-
-
-
     db-sqlserver:
         networks:
             - private-network
