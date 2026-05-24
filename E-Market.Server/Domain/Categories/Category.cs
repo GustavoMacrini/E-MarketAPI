@@ -11,8 +11,8 @@
             Active = true;
             CreatedBy = createdBy;
             EditedBy = editedBy;
-            CreatedOn = DateTime.Now;
-            EditedOn = DateTime.Now;
+            CreatedOn = DateTime.UtcNow;
+            EditedOn = DateTime.UtcNow;
         }
     }
 }

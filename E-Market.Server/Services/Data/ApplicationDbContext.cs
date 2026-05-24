@@ -13,7 +13,7 @@ namespace E_Market.Server.Services.Data
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-
+                
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

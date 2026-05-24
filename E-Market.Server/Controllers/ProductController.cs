@@ -60,7 +60,7 @@ namespace E_Market.Server.Controllers
             }
             catch (Exception e)
             {
-                return Results.BadRequest(e.Message);
+                return Results.BadRequest(e.ToString());
             }
         }
 

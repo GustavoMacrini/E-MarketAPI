@@ -25,8 +25,8 @@ namespace E_Market.Server.Domain.Products
 
             CreatedBy = createdBy;
             EditedBy = createdBy;
-            CreatedOn = DateTime.Now;
-            EditedOn = DateTime.Now;
+            CreatedOn = DateTime.UtcNow;
+            EditedOn = DateTime.UtcNow;
         }
 
         public void EditValues(string name, Category category, string description, decimal price, string editedBy)
@@ -37,8 +37,8 @@ namespace E_Market.Server.Domain.Products
             Price = price;
 
             EditedBy = editedBy;
-            CreatedOn = DateTime.Now;
-            EditedOn = DateTime.Now;
+            CreatedOn = DateTime.UtcNow;
+            EditedOn = DateTime.UtcNow;
 
         }
     }

@@ -4,24 +4,23 @@ services:
             context: ./
             dockerfile: ./E-Market.Server/Dockerfile
         depends_on:
-            - db-sqlserver
+            - db-postgres
         ports:
             - "8080:8080"
         networks:
             - private-network
-            - public-network
+            - public-network  
 
-    db-sqlserver:
+    db-postgres:
         networks:
             - private-network
-        image: mcr.microsoft.com/mssql/server:2022-preview-ubuntu-22.04
+        image: postgres:latest
         environment:
-            MSSQL_SA_PASSWORD: Sql2022@
-            ACCEPT_EULA: Y
-            APPLY_MIGRATIONS: true
-        container_name: db-sqlserver
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+        container_name: db-postgres
         ports:
-            - "1433:1433"    
+            - "5432:5432"
 
 networks:
     private-network:

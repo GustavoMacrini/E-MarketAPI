@@ -1,13 +1,14 @@
 using E_Market.Server.Services.Categories;
 using E_Market.Server.Services.Data;
 using E_Market.Server.Services.Products;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddSqlServer<ApplicationDbContext>(
-    builder.Configuration["ConnectionString:EMarket"]);
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration["ConnectionString:EMarket"]
+    ));
 
 
 builder.Services.AddControllers();
