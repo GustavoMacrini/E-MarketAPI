@@ -2,7 +2,7 @@ services:
   emarket-server:
     build:
       context: ./
-      dockerfile: ./E-Market.Server/Dockerfile
+      dockerfile: ./Dockerfile
     depends_on:
       db-postgres:
         condition: service_healthy
