@@ -1,29 +1,38 @@
 services:
-    emarket-server:
-        build: 
-            context: ./
-            dockerfile: ./E-Market.Server/Dockerfile
-        depends_on:
-            - db-postgres
-        ports:
-            - "8080:8080"
-        networks:
-            - private-network
-            - public-network  
+  emarket-server:
+    build:
+      context: ./
+      dockerfile: ./E-Market.Server/Dockerfile
+    depends_on:
+      db-postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      APPLY_MIGRATIONS: "true"
+      ConnectionString__EMarket: "Host=db-postgres;Port=5432;Database=EMarket;Username=postgres;Password=postgres"
+    networks:
+      - private-network
 
-    db-postgres:
-        networks:
-            - private-network
-        image: postgres:latest
-        environment:
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: postgres
-        container_name: db-postgres
-        ports:
-            - "5432:5432"
+  db-postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: EMarket
+    ports:
+      - "5432:5432"
+    networks:
+      - private-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d EMarket"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
 networks:
-    private-network:
-        driver: bridge
-    public-network:
-        driver: bridge
+  private-network:
+    driver: bridge
