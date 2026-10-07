@@ -1,6 +1,8 @@
-﻿using E_Market.Server.Domain.Categories;
+﻿using E_Market.Server.Domain.Carts;
+using E_Market.Server.Domain.Categories;
 using E_Market.Server.Domain.Orders;
 using E_Market.Server.Domain.Products;
+using E_Market.Server.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Market.Server.Services.Data
@@ -10,6 +12,8 @@ namespace E_Market.Server.Services.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

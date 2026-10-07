@@ -70,6 +70,18 @@ namespace E_Market.Server.Services.Products
             return new ProductResponse(product.Id, product.Name, categoryResponse, product.Description, product.Price);
         }
 
+        public async Task<List<ProductResponse>> GetProductsByCategoryIdAsync(Guid categoryId)
+        {
+            Category category = await _context.Categories.Where(c => c.Id == categoryId).FirstOrDefaultAsync();
+            if (category == null)
+            {
+                throw new Exception($"Category {categoryId} not found.");
+            }
+            var products = await _context.Products.Include(p => p.Category).Where(p => p.Category.Id == categoryId).ToListAsync();
+            List<ProductResponse> response = products.Select(p => new ProductResponse(p.Id, p.Name, new CategoryResponse(p.Category.Id, p.Category.Name), p.Description, p.Price)).ToList();
+            return response;
+        }
+
 
 
     }

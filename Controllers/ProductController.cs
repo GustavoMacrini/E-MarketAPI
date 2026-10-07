@@ -29,11 +29,43 @@ namespace E_Market.Server.Controllers
             }
         }
 
-        [HttpGet()]
-        public async Task<IResult> GetProductsAsync()
+        [HttpPut("{id:guid}")]
+        public async Task<IResult> updateProductAsync([FromRoute] Guid id, ProductRequest request)
         {
-            List<ProductResponse> response =  await _productService.GetAllProductsAsync();
-            return Results.Ok(response);
+            try
+            {
+                ProductResponse response = await _productService.UpdateProductById(id, request);
+                return Results.Ok(response);
+            }
+            catch (Exception e)
+            {
+                return Results.BadRequest(e.ToString());
+            }
+        }
+
+        [HttpGet()]
+        public async Task<IResult> GetProductsAsync([FromQuery] Guid? categoryId)
+        {           
+            try
+            {
+                List<ProductResponse> response = new List<ProductResponse>();
+
+                if (categoryId.HasValue)
+                {
+                    response = await _productService.GetProductsByCategoryIdAsync(categoryId.Value);
+                    return Results.Ok(response);
+                }
+               
+                response = await _productService.GetAllProductsAsync();
+                return Results.Ok(response);
+            }
+            catch (Exception e)
+            {
+                return Results.NotFound(e.Message);
+            }
+
+
+            
         }
 
         [HttpGet("{id:guid}")]
@@ -49,21 +81,6 @@ namespace E_Market.Server.Controllers
                 return Results.NotFound(e.Message);
             }
         }
-
-        [HttpPut("{id:guid}")]
-        public async Task<IResult> updateProductAsync([FromRoute] Guid id, ProductRequest request)
-        {
-            try
-            {
-                ProductResponse response = await _productService.UpdateProductById(id, request);
-                return Results.Ok(response);
-            }
-            catch (Exception e)
-            {
-                return Results.BadRequest(e.ToString());
-            }
-        }
-
 
     }
 }

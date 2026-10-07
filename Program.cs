@@ -1,6 +1,7 @@
 using E_Market.Server.Services.Categories;
 using E_Market.Server.Services.Data;
 using E_Market.Server.Services.Products;
+using E_Market.Server.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
