@@ -1,7 +1,5 @@
 ﻿using E_Market.Server.Domain.Carts;
 using E_Market.Server.Domain.Orders;
-using E_Market.Server.Domain.Products;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace E_Market.Server.Domain.Users
 {

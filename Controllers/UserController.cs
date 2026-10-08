@@ -1,7 +1,6 @@
 ﻿using E_Market.Server.Domain.Users;
 using E_Market.Server.Services.Users;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace E_Market.Server.Controllers
 {

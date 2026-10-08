@@ -1,6 +1,5 @@
 ﻿using E_Market.Server.Domain.Products;
 using E_Market.Server.Services.Products;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Market.Server.Controllers
