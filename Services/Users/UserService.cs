@@ -1,5 +1,6 @@
-﻿using E_Market.Server.Domain.Carts;
-using E_Market.Server.Domain.Orders;
+﻿using E_Market.Server.Domain.CartItems;
+using E_Market.Server.Domain.Carts;
+using E_Market.Server.Domain.Categories;
 using E_Market.Server.Domain.Products;
 using E_Market.Server.Domain.Users;
 using E_Market.Server.Services.Data;
@@ -16,12 +17,38 @@ namespace E_Market.Server.Services.Users
             _context = context;
         }
 
+        private UserResponse _buildUserResponse(User user)
+        {
+            CartResponse cartResponse = new CartResponse(
+                  user.Cart.Id,
+                  user.Cart.CartItems.Select(
+                      c => new CartItemResponse(
+                              c.Id,
+                              new ProductResponse(
+                                  c.Product.Id,
+                                  c.Product.Name,
+                                  new CategoryResponse(
+                                      c.Product.Category.Id,
+                                      c.Product.Category.Name
+                                  ),
+                                  c.Product.Description,
+                                  c.Product.Price
+                              ),
+                              c.Quantity
+                              
+                          )
+                      ).ToList()
+                  );
+
+            return new UserResponse(user.Id, user.Name, user.Email, user.Orders, cartResponse);
+        }
+
         public async Task<UserResponse> CreateUserAsync(UserRequest request)
         {
             try
             {
                Cart cart = new Cart(
-                   new List<Product>(),
+                   new List<CartItem>(),
                    "CreatedBy"
                );
 
@@ -36,7 +63,8 @@ namespace E_Market.Server.Services.Users
                     );
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
-                return new UserResponse(user.Id, user.Name, user.Email, user.Orders, user.Cart);
+
+                return _buildUserResponse(user);
             }
             catch (Exception e)
             {
@@ -48,21 +76,18 @@ namespace E_Market.Server.Services.Users
         {
             try
             {
-                List<User> users = await _context.Users.Include(p => p.Orders)
-                                                       .Include(p => p.Cart).ToListAsync();
+                List<User> users = await _context.Users
+                                    .Include(p => p.Orders)
+                                    .Include(p => p.Cart)
+                                        .ThenInclude(c => c.CartItems)
+                                        .ThenInclude(ci => ci.Product)
+                                        .ThenInclude(p => p.Category)
+                                    .ToListAsync();
 
                 List<UserResponse> response = users.Select(
-                    u => new UserResponse(
-                        u.Id, 
-                        u.Name, 
-                        u.Email,
-                        u.Orders,
-                        u.Cart
-                    )
+                    u => _buildUserResponse(u)        
                 ).ToList();
-
                 return response;
-
             }
             catch (Exception e)
             {
@@ -75,7 +100,10 @@ namespace E_Market.Server.Services.Users
             try
             {
                 User user = await _context.Users.Where(u => u.Id == id)
-                    .Include(u => u.Cart)
+                     .Include(p => p.Cart)
+                        .ThenInclude(c => c.CartItems)
+                        .ThenInclude(ci => ci.Product)
+                        .ThenInclude(p => p.Category)
                     .Include(u => u.Orders)
                     .FirstOrDefaultAsync();
                 if(user == null)
@@ -83,16 +111,9 @@ namespace E_Market.Server.Services.Users
                     throw new Exception($"User id {id} not found.");
                 }
 
-                UserResponse response = new UserResponse(
-                    user.Id,
-                    user.Name,
-                    user.Email,
-                    user.Orders,
-                    user.Cart
-                );
-
-                return response;
-            }catch(Exception e)
+                return _buildUserResponse(user);
+            }
+            catch(Exception e)
             {
                 throw new Exception(e.Message);
             }

@@ -3,6 +3,6 @@ using E_Market.Server.Domain.Carts;
 
 namespace E_Market.Server.Domain.Users
 {
-    public record UserResponse(Guid Id, string Name, string Email, List<Order> Orders, Cart cart);
+    public record UserResponse(Guid Id, string Name, string Email, List<Order> Orders, CartResponse cart);
     
 }

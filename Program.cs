@@ -1,3 +1,4 @@
+using E_Market.Server.Services.Carts;
 using E_Market.Server.Services.Categories;
 using E_Market.Server.Services.Data;
 using E_Market.Server.Services.Products;
@@ -19,6 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<CartService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",

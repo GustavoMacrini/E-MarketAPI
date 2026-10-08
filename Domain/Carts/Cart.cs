@@ -1,17 +1,18 @@
-﻿using E_Market.Server.Domain.Products;
+﻿using E_Market.Server.Domain.CartItems;
+using E_Market.Server.Domain.Products;
 
 namespace E_Market.Server.Domain.Carts
 {
     public class Cart : Entity
     {
-        public List<Product> Products { get; set; }
+        public List<CartItem> CartItems { get; set; }
         public Cart()
         {
-            Products = new List<Product>();
+            
         }
-        public Cart(List<Product> products, string createdBy)
+        public Cart(List<CartItem> cartItems, string createdBy)
         {
-            Products = products;
+            CartItems = cartItems;
             CreatedBy = createdBy;
             EditedBy = createdBy;
             CreatedOn = DateTime.UtcNow;

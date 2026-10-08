@@ -1,6 +1,6 @@
 ﻿using E_Market.Server.Domain.Products;
 
-namespace E_Market.Server.Domain.Carts
+namespace E_Market.Server.Domain.CartItems
 {
     public class CartItem
     {
