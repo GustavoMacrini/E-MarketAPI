@@ -1,5 +1,6 @@
 ﻿using E_Market.Server.Domain.Categories;
 using E_Market.Server.Domain.Products;
+using E_Market.Server.Services.Auth;
 using E_Market.Server.Services.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,10 +9,12 @@ namespace E_Market.Server.Services.Products
     public class ProductService
     {
         private ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductService(ApplicationDbContext context)
+        public ProductService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ProductResponse> CreateProductAsync(ProductRequest request)
@@ -21,9 +24,8 @@ namespace E_Market.Server.Services.Products
             {
                 throw new Exception($"Category {request.CategoryId} not found.");
             }
-            //todo: pegar id do token do usuario logado
-            Guid testeId = Guid.NewGuid();
-            Product product = new Product(request.Name, category, request.Description, request.Price, testeId);
+            Guid userId = _httpContextAccessor.HttpContext!.User.GetUserId();
+            Product product = new Product(request.Name, category, request.Description, request.Price, userId);
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
@@ -64,9 +66,8 @@ namespace E_Market.Server.Services.Products
                 throw new Exception($"Category {request.CategoryId} not found.");
             }
 
-            //todo: pegar id do token do usuario logado
-            Guid testeId = Guid.NewGuid();
-            product.EditValues(request.Name, category, request.Description, request.Price, testeId);
+            Guid userId = _httpContextAccessor.HttpContext!.User.GetUserId();
+            product.EditValues(request.Name, category, request.Description, request.Price, userId);
             await _context.SaveChangesAsync();
 
             CategoryResponse categoryResponse = new CategoryResponse(product.Category.Id, product.Category.Name);

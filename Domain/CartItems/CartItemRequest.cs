@@ -2,6 +2,6 @@
 
 namespace E_Market.Server.Domain.CartItems
 {
-    public record CartItemRequest(Guid ProductId, int Quantity, Guid CartId);
+    public record CartItemRequest(Guid ProductId, int Quantity);
     
 }

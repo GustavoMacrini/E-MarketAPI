@@ -25,8 +25,7 @@ namespace E_Market.Server.Services.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder);
-            // place for further model configuration if needed
+            base.OnModelCreating(builder);            
         }
 
     }

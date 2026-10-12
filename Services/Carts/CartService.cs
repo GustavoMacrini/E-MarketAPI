@@ -2,6 +2,8 @@
 using E_Market.Server.Domain.Carts;
 using E_Market.Server.Domain.Categories;
 using E_Market.Server.Domain.Products;
+using E_Market.Server.Domain.Users;
+using E_Market.Server.Services.Auth;
 using E_Market.Server.Services.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +13,12 @@ namespace E_Market.Server.Services.Carts
     public class CartService
     {
         private ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CartService(ApplicationDbContext context)
+        public CartService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         private CartItemResponse _buildCartItemResponse(CartItem cartItem, Guid cartId)
@@ -41,20 +45,28 @@ namespace E_Market.Server.Services.Carts
         {
             try
             {
-                //ToDo: CartItemRequest não mandar qual cart é, mas sim pegar o cart do usuário logado. Para isso, precisa de um UserId no request.
-                string msgErro = null;
-                Cart cart = await _context.Carts
-                    .Include(c => c.CartItems)                   
-                    .Where(c => c.Id == request.CartId)
-                    .FirstOrDefaultAsync();
+                Guid userId = _httpContextAccessor.HttpContext!.User.GetUserId();
+                User? user = await _context.Users
+                    .Include(u => u.Cart)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
 
-                Product product = await _context.Products
-                                  .Where(p => p.Id == request.ProductId)
-                                  .FirstOrDefaultAsync();
+                if (user?.Cart == null)
+                {
+                    throw new Exception("User or Cart not found.");
+                }
+
+                string? msgErro = null;
+                Cart? cart = await _context.Carts
+                    .Include(c => c.CartItems)
+                    .FirstOrDefaultAsync(c => c.Id == user.Cart.Id);
+
+                Product? product = await _context.Products
+                    .Include(p => p.Category)
+                    .FirstOrDefaultAsync(p => p.Id == request.ProductId);
 
                 if (cart == null)
                 {
-                    msgErro = $"Cart id {request.CartId} not found.";
+                    msgErro = $"Cart id {user.Cart.Id} not found.";
                 }
 
                 
