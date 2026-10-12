@@ -22,8 +22,8 @@ namespace E_Market.Server.Controllers
         {
             try
             {
-                await _productService.CreateProductAsync(request);
-                return Results.Created();
+                ProductResponse response = await _productService.CreateProductAsync(request);             
+                return Results.Created($"api/v1/product/{response.Id}", response);
             }
             catch (Exception e) 
             {
