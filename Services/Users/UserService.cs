@@ -1,9 +1,12 @@
-﻿using E_Market.Server.Domain.CartItems;
+﻿using E_Market.Server.Domain.Auth;
+using E_Market.Server.Domain.CartItems;
 using E_Market.Server.Domain.Carts;
 using E_Market.Server.Domain.Categories;
 using E_Market.Server.Domain.Products;
 using E_Market.Server.Domain.Users;
+using E_Market.Server.Services.Auth;
 using E_Market.Server.Services.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Market.Server.Services.Users
@@ -11,10 +14,14 @@ namespace E_Market.Server.Services.Users
     public class UserService
     {
         private ApplicationDbContext _context;
+        private IJwtService _jwtService;
+        private readonly UserManager<User> _userManager;
 
-        public UserService(ApplicationDbContext context)
+        public UserService(ApplicationDbContext context, IJwtService jwtService, UserManager<User> userManager)
         {
             _context = context;
+            _jwtService = jwtService;
+            _userManager = userManager;
         }
 
         private UserResponse _buildUserResponse(User user)
@@ -45,31 +52,35 @@ namespace E_Market.Server.Services.Users
 
         public async Task<UserResponse> CreateUserAsync(UserRequest request)
         {
-            try
+            User? existingUser = await _userManager.FindByEmailAsync(request.Email);
+            if (existingUser != null)
             {
-               Cart cart = new Cart(
-                   new List<CartItem>(),
-                   "CreatedBy"
-               );
-
-                await _context.Carts.AddAsync(cart);
-
-                User user = new User(
-                    request.Name,
-                    request.Email,
-                    request.Password,
-                    null,
-                    cart
-                    );
-                await _context.Users.AddAsync(user);
-                await _context.SaveChangesAsync();
-
-                return _buildUserResponse(user);
+                throw new Exception("Email já cadastrado.");
             }
-            catch (Exception e)
+
+            await using var transaction = await _context.Database.BeginTransactionAsync();
+
+            Guid userId = Guid.NewGuid();
+            Cart cart = new Cart(new List<CartItem>(), userId);
+            _context.Carts.Add(cart);
+            await _context.SaveChangesAsync();
+
+            User user = new User(request.Name, request.Email, [], cart)
             {
-                throw new Exception(e.Message);
+                Id = userId,
+            };
+
+            IdentityResult createResult = await _userManager.CreateAsync(user, request.Password);
+            if (!createResult.Succeeded)
+            {
+                await transaction.RollbackAsync();
+                string errors = string.Join(" ", createResult.Errors.Select(e => e.Description));
+                throw new Exception(errors);
             }
+
+            await transaction.CommitAsync();
+
+            return _buildUserResponse(user);
         }
 
         public async Task<List<UserResponse>> GetAllUsersAsync()
@@ -119,5 +130,22 @@ namespace E_Market.Server.Services.Users
             }
         }
 
+        public async Task<LoginResponse> LoginAsync(UserLoginRequest request)
+        {
+            User? user = await _userManager.FindByEmailAsync(request.Email);
+            if (user == null)
+            {
+                return new LoginResponse("Email or Password is incorrect.", "");
+            }
+
+            bool passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
+            if (!passwordValid)
+            {
+                return new LoginResponse("Email or Password is incorrect.", "");
+            }
+
+            string token = _jwtService.GenerateToken(user);
+            return new LoginResponse("", token);
+        }
     }
 }

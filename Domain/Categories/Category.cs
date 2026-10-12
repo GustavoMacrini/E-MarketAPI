@@ -5,7 +5,7 @@
         public string Name { get; private set; }
         public bool Active { get; private set; }
 
-        public Category(string name, string createdBy, string editedBy)
+        public Category(string name, Guid createdBy, Guid editedBy)
         {
             Name = name;
             Active = true;

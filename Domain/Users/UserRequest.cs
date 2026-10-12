@@ -1,5 +1,7 @@
-﻿namespace E_Market.Server.Domain.Users
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace E_Market.Server.Domain.Users
 {
-    public record UserRequest(string Name, string Email, string Password);
+    public record UserRequest(string Name, [EmailAddress]string Email, string Password);
     
 }

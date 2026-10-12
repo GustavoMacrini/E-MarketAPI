@@ -16,7 +16,7 @@ namespace E_Market.Server.Domain.Products
 
         public Product() { }
 
-        public Product(string name, Category category, string description, decimal price, string createdBy)
+        public Product(string name, Category category, string description, decimal price, Guid createdBy)
         {
             Name = name;
             Category = category;
@@ -29,7 +29,7 @@ namespace E_Market.Server.Domain.Products
             EditedOn = DateTime.UtcNow;
         }
 
-        public void EditValues(string name, Category category, string description, decimal price, string editedBy)
+        public void EditValues(string name, Category category, string description, decimal price, Guid editedBy)
         {
             Name = name;
             Category = category;

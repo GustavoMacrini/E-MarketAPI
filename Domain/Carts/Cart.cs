@@ -10,7 +10,7 @@ namespace E_Market.Server.Domain.Carts
         {
             
         }
-        public Cart(List<CartItem> cartItems, string createdBy)
+        public Cart(List<CartItem> cartItems, Guid createdBy)
         {
             CartItems = cartItems;
             CreatedBy = createdBy;

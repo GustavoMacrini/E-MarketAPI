@@ -1,4 +1,5 @@
 ﻿using E_Market.Server.Domain.Categories;
+using E_Market.Server.Services.Auth;
 using E_Market.Server.Services.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,10 +8,12 @@ namespace E_Market.Server.Services.Categories
     public class CategoryService
     {
         private ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CategoryService(ApplicationDbContext context)
+        public CategoryService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<CategoryResponse> CreateCategoryAsync(CategoryRequest request)
@@ -23,7 +26,8 @@ namespace E_Market.Server.Services.Categories
                 throw new Exception($"Category {request.Name} Already Exists.");
             }
 
-            Category category = new Category(request.Name, "testeCreated", "testeWhen");
+            Guid userId = _httpContextAccessor.HttpContext!.User.GetUserId();
+            Category category = new Category(request.Name, userId, userId);
             await _context.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
 

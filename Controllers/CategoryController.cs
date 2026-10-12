@@ -1,11 +1,14 @@
 ﻿
 using E_Market.Server.Domain.Categories;
 using E_Market.Server.Services.Categories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Market.Server.Controllers
 {
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/[controller]")]
     [ApiController]
     public class CategoryController : ControllerBase

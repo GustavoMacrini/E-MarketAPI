@@ -1,9 +1,12 @@
 ﻿using E_Market.Server.Domain.CartItems;
 using E_Market.Server.Services.Carts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace E_Market.Server.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/v1/[controller]")]
     public class CartController : ControllerBase
     {

@@ -21,8 +21,9 @@ namespace E_Market.Server.Services.Products
             {
                 throw new Exception($"Category {request.CategoryId} not found.");
             }
-
-            Product product = new Product(request.Name, category, request.Description, request.Price, "CreatedBy");
+            //todo: pegar id do token do usuario logado
+            Guid testeId = Guid.NewGuid();
+            Product product = new Product(request.Name, category, request.Description, request.Price, testeId);
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
 
@@ -63,7 +64,9 @@ namespace E_Market.Server.Services.Products
                 throw new Exception($"Category {request.CategoryId} not found.");
             }
 
-            product.EditValues(request.Name, category, request.Description, request.Price, "editedBy");
+            //todo: pegar id do token do usuario logado
+            Guid testeId = Guid.NewGuid();
+            product.EditValues(request.Name, category, request.Description, request.Price, testeId);
             await _context.SaveChangesAsync();
 
             CategoryResponse categoryResponse = new CategoryResponse(product.Category.Id, product.Category.Name);
